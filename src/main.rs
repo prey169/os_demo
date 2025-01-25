@@ -11,9 +11,12 @@ use os_demo::println;
 pub extern "C" fn _start() -> ! {
     println!("Hello {}", "World");
 
+    os_demo::init();
+
     #[cfg(test)]
     test_main();
 
+    println!("It did not crash");
     loop {}
 }
 
