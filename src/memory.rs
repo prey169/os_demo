@@ -1,9 +1,7 @@
-use bootloader::bootinfo::{MemoryMap, MemoryRegion, MemoryRegionType};
+use bootloader::bootinfo::{MemoryMap, MemoryRegionType};
 use x86_64::PhysAddr;
 use x86_64::{
-    structures::paging::{
-        FrameAllocator, Mapper, OffsetPageTable, Page, PageTable, PhysFrame, Size4KiB,
-    },
+    structures::paging::{FrameAllocator, OffsetPageTable, PageTable, PhysFrame, Size4KiB},
     VirtAddr,
 };
 
@@ -64,47 +62,3 @@ unsafe impl FrameAllocator<Size4KiB> for BootInfoFrameAllocator {
         frame
     }
 }
-/*
-
-pub unsafe fn translate_addr(addr: VirtAddr, physical_memory_offset: VirtAddr) -> Option<PhysAddr> {
-    translate_addr_inner(addr, physical_memory_offset)
-}
-
-fn translate_addr_inner(addr: VirtAddr, physical_memory_offset: VirtAddr) -> Option<PhysAddr> {
-    use x86_64::registers::control::Cr3;
-    use x86_64::structures::paging::page_table::FrameError;
-
-    // read the active level 4 frame from the CR3 register
-    // which contains the physical address of the highest-level page table.
-    let (level_4_table_frame, _) = Cr3::read();
-
-    let table_indexes = [
-        addr.p4_index(),
-        addr.p3_index(),
-        addr.p2_index(),
-        addr.p1_index(),
-    ];
-
-    let mut frame = level_4_table_frame;
-
-    //traverses the multi-level page table
-    for &index in &table_indexes {
-        // convert the frame into a page table reference
-        let virt = physical_memory_offset + frame.start_address().as_u64();
-        let table_ptr: *const PageTable = virt.as_ptr();
-        let table = unsafe { &*table_ptr }; // deferencing a raw pointer is unsafe
-
-        // read the page table enry and update the frame
-        let entry = &table[index];
-        frame = match entry.frame() {
-            Ok(frame) => frame,
-            Err(FrameError::FrameNotPresent) => return None,
-            Err(FrameError::HugeFrame) => panic!("huge pages not supported"),
-        };
-    }
-
-    // calculate the physical address by adding the page offset
-    Some(frame.start_address() + u64::from(addr.page_offset()))
-}
-
-*/
