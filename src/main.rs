@@ -4,6 +4,9 @@
 #![test_runner(os_demo::test_runner)]
 #![reexport_test_harness_main = "test_main"]
 
+extern crate alloc;
+
+use alloc::boxed::Box;
 use bootloader::{bootinfo::MemoryRegion, entry_point, BootInfo};
 use core::panic::PanicInfo;
 use os_demo::println;
@@ -21,6 +24,8 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
     let phys_mem_offset = VirtAddr::new(boot_info.physical_memory_offset);
     let mut mapper = unsafe { memory::init(phys_mem_offset) };
     let mut frame_allocator = unsafe { BootInfoFrameAllocator::init(&boot_info.memory_map) };
+
+    let x = Box::new(41);
 
     #[cfg(test)]
     test_main();
