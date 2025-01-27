@@ -14,8 +14,8 @@ use os_demo::println;
 entry_point!(kernel_main);
 
 fn kernel_main(boot_info: &'static BootInfo) -> ! {
-    use os_demo::memory;
-    use os_demo::memory::BootInfoFrameAllocator;
+    use os_demo::allocator;
+    use os_demo::memory::{self, BootInfoFrameAllocator};
     use x86_64::{structures::paging::Page, VirtAddr};
 
     println!("Hello {}", "World");
@@ -25,6 +25,7 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
     let mut mapper = unsafe { memory::init(phys_mem_offset) };
     let mut frame_allocator = unsafe { BootInfoFrameAllocator::init(&boot_info.memory_map) };
 
+    allocator::init_heap(&mut mapper, &mut frame_allocator).expect("heap initialized failed");
     let x = Box::new(41);
 
     #[cfg(test)]
