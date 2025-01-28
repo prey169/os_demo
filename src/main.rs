@@ -7,7 +7,7 @@
 extern crate alloc;
 
 use alloc::{boxed::Box, rc::Rc, vec, vec::Vec};
-use bootloader::{bootinfo::MemoryRegion, entry_point, BootInfo};
+use bootloader::{entry_point, BootInfo};
 use core::panic::PanicInfo;
 use os_demo::println;
 
@@ -16,7 +16,7 @@ entry_point!(kernel_main);
 fn kernel_main(boot_info: &'static BootInfo) -> ! {
     use os_demo::allocator;
     use os_demo::memory::{self, BootInfoFrameAllocator};
-    use x86_64::{structures::paging::Page, VirtAddr};
+    use x86_64::VirtAddr;
 
     println!("Hello {}", "World");
     os_demo::init();
