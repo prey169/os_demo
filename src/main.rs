@@ -11,7 +11,7 @@ use bootloader::{entry_point, BootInfo};
 use core::panic::PanicInfo;
 use os_demo::{
     println,
-    task::{simple_executor::SimpleExectutor, Task},
+    task::{keyboard, simple_executor::SimpleExectutor, Task},
 };
 
 entry_point!(kernel_main);
@@ -62,6 +62,7 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
 
     let mut executor = SimpleExectutor::new();
     executor.spawn(Task::new(example_task()));
+    executor.spawn(Task::new(keyboard::print_keypresses()));
     executor.run();
 
     #[cfg(test)]
