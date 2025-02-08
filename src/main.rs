@@ -11,7 +11,7 @@ use bootloader::{entry_point, BootInfo};
 use core::panic::PanicInfo;
 use os_demo::{
     println,
-    task::{keyboard, simple_executor::SimpleExectutor, Task},
+    task::{executor::Executor, keyboard, simple_executor::SimpleExectutor, Task},
 };
 
 entry_point!(kernel_main);
@@ -60,16 +60,13 @@ fn kernel_main(boot_info: &'static BootInfo) -> ! {
         Rc::strong_count(&cloned_reference)
     );
 
-    let mut executor = SimpleExectutor::new();
-    executor.spawn(Task::new(example_task()));
-    executor.spawn(Task::new(keyboard::print_keypresses()));
-    executor.run();
-
     #[cfg(test)]
     test_main();
 
-    println!("It did not crash");
-    os_demo::hlt_loop();
+    let mut executor = Executor::new();
+    executor.spawn(Task::new(example_task()));
+    executor.spawn(Task::new(keyboard::print_keypresses()));
+    executor.run();
 }
 
 /// This function is called on panic.
